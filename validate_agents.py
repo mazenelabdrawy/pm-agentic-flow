@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-validate_agents.py — pre-submit validator for pm-flow contributions.
+validate_agents.py — pre-submit validator for pm-agentic-flow contributions.
 
 Checks, with no third-party dependencies:
   1. .claude-plugin/marketplace.json and plugin.json are valid JSON.
@@ -183,7 +183,7 @@ def main() -> int:
         for e in errors:
             print(f"  - {e}")
         return 1
-    print(f"\n✓ pm-flow validation passed ({len(warnings)} warning(s)).")
+    print(f"\n✓ pm-agentic-flow validation passed ({len(warnings)} warning(s)).")
     return 0
 
 

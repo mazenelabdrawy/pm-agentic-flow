@@ -1,5 +1,5 @@
 {
-  "name": "pm-flow",
+  "name": "pm-agentic-flow",
   "owner": {
     "name": "Mazen El-Badrawy",
     "url": "https://github.com/mazenelabdrawy"
@@ -10,7 +10,7 @@
   },
   "plugins": [
     {
-      "name": "pm-flow",
+      "name": "pm-agentic-flow",
       "source": "./",
       "description": "Eval-gated agentic PM pipeline: hypothesis → research → PRD → prototype → eval → deploy → monitor. 16 dual-mode agents usable standalone or as nodes in the orchestrated loop."
     }

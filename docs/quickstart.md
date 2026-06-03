@@ -6,12 +6,12 @@ From zero to a populated PCO + PRD + eval results + handoff.
 
 ### Claude Code (CLI)
 ```bash
-claude plugin marketplace add mazenelabdrawy/pm-flow
-claude plugin install pm-flow@pm-flow
+claude plugin marketplace add mazenelabdrawy/pm-agentic-flow
+claude plugin install pm-agentic-flow@pm-agentic-flow
 ```
 
 ### Claude Cowork
-Customize (bottom-left) → Browse plugins → Personal → **+** → **Add marketplace from GitHub** → enter `mazenelabdrawy/pm-flow`.
+Customize (bottom-left) → Browse plugins → Personal → **+** → **Add marketplace from GitHub** → enter `mazenelabdrawy/pm-agentic-flow`.
 
 ### Without installing (read-only)
 Clone the repo and open [`examples/sample-run/`](../examples/sample-run/) — a complete worked run, no setup required.

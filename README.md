@@ -1,9 +1,9 @@
-![GitHub stars](https://img.shields.io/github/stars/mazenelabdrawy/pm-flow?style=flat-square)
+![GitHub stars](https://img.shields.io/github/stars/mazenelabdrawy/pm-agentic-flow?style=flat-square)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 [![Companion: pm-toolkit](https://img.shields.io/badge/companion-pm--toolkit-blue?style=flat-square)](https://github.com/mazenelabdrawy/pm-toolkit)
 
-# pm-flow — an eval-gated agentic pipeline for product management
+# PM Agentic Flow — an eval-gated agentic pipeline for product management
 
 > Drive a raw idea through **hypothesis → research → PRD → prototype → eval → deploy → monitor** — where every handoff passes an **evidence gate** before the next agent runs. Nothing advances on an unsupported claim.
 
@@ -59,12 +59,12 @@ Full diagram + rationale: [docs/architecture.md](docs/architecture.md).
 
 ### Claude Code (CLI)
 ```bash
-claude plugin marketplace add mazenelabdrawy/pm-flow
-claude plugin install pm-flow@pm-flow
+claude plugin marketplace add mazenelabdrawy/pm-agentic-flow
+claude plugin install pm-agentic-flow@pm-agentic-flow
 ```
 
 ### Claude Cowork (recommended for non-developers)
-Customize (bottom-left) → Browse plugins → Personal → **+** → **Add marketplace from GitHub** → enter `mazenelabdrawy/pm-flow`.
+Customize (bottom-left) → Browse plugins → Personal → **+** → **Add marketplace from GitHub** → enter `mazenelabdrawy/pm-agentic-flow`.
 
 ### Other AI assistants (skills only)
 The `skills/*/SKILL.md` files follow the universal skill format. Commands (`/slash`) are Claude-specific.

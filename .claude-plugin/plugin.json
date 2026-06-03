@@ -1,12 +1,12 @@
 {
-  "name": "pm-flow",
+  "name": "pm-agentic-flow",
   "version": "0.1.0",
   "description": "Eval-gated agentic PM pipeline: hypothesis → research → PRD → prototype → eval → deploy → monitor. 16 dual-mode agents usable standalone or as nodes in the orchestrated loop.",
   "author": {
     "name": "Mazen El-Badrawy",
     "url": "https://github.com/mazenelabdrawy"
   },
-  "homepage": "https://github.com/mazenelabdrawy/pm-flow",
+  "homepage": "https://github.com/mazenelabdrawy/pm-agentic-flow",
   "license": "MIT",
   "keywords": [
     "product-management",
