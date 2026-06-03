@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Python (validator)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Runtime PCO output from local test runs (keep templates + examples)
+/PRODUCT_CONTEXT.md
+/runs/
+
+# Node (none expected, but guard)
+node_modules/

@@ -1,0 +1,69 @@
+# pm-flow eval rubric — tune these to your team's actual bar.
+# Gates read this file to decide pass / fail / revise. See docs/eval-gates.md.
+
+version: 0.1.0
+
+# Default behavior applied to every gate unless overridden per-gate below.
+defaults:
+  # On fail, return control to the same agent with the gate's feedback.
+  on_fail: revise
+  # Max revision round-trips before the orchestrator escalates to the user.
+  max_revisions: 3
+
+# Minimum confidence a finding must carry to back a downstream requirement.
+min_confidence_to_advance: medium   # one of: low | medium | high
+
+# Per-gate configuration. `check` names map to eval/checks/<name>.
+gates:
+  framing-complete:
+    stage: hypothesis
+    check: completeness
+    required_fields: [problem, target-user, bets, success-criteria]
+
+  research-cited:
+    stage: research            # applies to each research-* section
+    check: citation
+    sections: [research-market, research-competitive, research-user]
+
+  synthesis-cited:
+    stage: synthesis
+    check: citation
+    sections: [synthesis]
+    require_confidence: true   # each insight must carry a confidence tag
+
+  prd-approved:
+    stage: prd
+    checks: [citation, traceability]   # every requirement traces to a synthesis finding
+    require_critique_clear: true       # prd-critique must have no open unsupported-claim flags
+
+  spec-complete:
+    stage: prototype-spec
+    check: completeness
+    rule: every-requirement-has-acceptance-criterion
+
+  eval-threshold:
+    stage: eval-runner
+    check: score
+    # Aggregate score the prototype must reach to advance to deploy.
+    threshold: 0.75            # 0.0–1.0
+    # Per-criterion floor — no single criterion may fall below this even if the aggregate passes.
+    per_criterion_floor: 0.5
+
+# Scoring criteria used by eval-runner to produce eval-results.
+# weight values are relative; they are normalized at scoring time.
+scoring_criteria:
+  - id: problem-fit
+    weight: 3
+    description: Does the prototype address the stated problem and target user?
+  - id: evidence-grounding
+    weight: 3
+    description: Are requirements traceable to cited findings?
+  - id: completeness
+    weight: 2
+    description: Are flows, states, and edge cases covered?
+  - id: feasibility
+    weight: 2
+    description: Is the spec buildable within stated constraints?
+  - id: responsible-ai
+    weight: 1
+    description: Are data-lineage, consent, and bias risks addressed (if applicable)?

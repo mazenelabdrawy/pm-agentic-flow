@@ -1,0 +1,18 @@
+{
+  "name": "pm-flow",
+  "owner": {
+    "name": "Mazen El-Badrawy",
+    "url": "https://github.com/mazenelabdrawy"
+  },
+  "metadata": {
+    "description": "An eval-gated agentic pipeline for product management. Every handoff passes an evidence gate before the next agent runs.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "pm-flow",
+      "source": "./",
+      "description": "Eval-gated agentic PM pipeline: hypothesis → research → PRD → prototype → eval → deploy → monitor. 16 dual-mode agents usable standalone or as nodes in the orchestrated loop."
+    }
+  ]
+}
