@@ -12,44 +12,44 @@ pm-flow is an **AI-native, eval-gated agentic pipeline** for product management.
 ## The loop
 
 ```mermaid
-flowchart LR
+flowchart TB
   idea([raw idea]) --> H[1 · hypothesis]
-  H --> g1{gate: framing complete}
-  g1 -. fail / revise .-> H
+  H --> g1{framing complete?}
+  g1 -. revise .-> H
   g1 -->|pass| R
 
   subgraph R[2 · research · parallel]
-    direction TB
+    direction LR
     RM[research-market]
     RC[research-competitive]
     RU[research-user]
   end
-  R --> g2{gate: every claim cited}
-  g2 -. fail .-> R
+  R --> g2{every claim cited?}
+  g2 -. revise .-> R
   g2 -->|pass| S[3 · synthesis]
 
-  S --> g3{gate: cited + confidence + consistent}
-  g3 -. fail .-> S
+  S --> g3{cited + confident + consistent?}
+  g3 -. revise .-> S
   g3 -->|pass| P
 
   subgraph P[4 · prd]
     direction LR
     PW[prd-writer] <--> PC[prd-critique]
   end
-  P --> g4{gate: traced + consistent + approved}
-  g4 -. fail .-> P
+  P --> g4{traced + consistent + approved?}
+  g4 -. revise .-> P
   g4 -->|pass| SP[5 · prototype-spec]
 
-  SP --> g5{gate: spec complete}
-  g5 -. fail .-> SP
+  SP --> g5{spec complete?}
+  g5 -. revise .-> SP
   g5 -->|pass| E[6 · eval-runner]
 
-  E --> g6{gate: score ≥ threshold<br/>anchored}
-  g6 -. fail .-> P
+  E --> g6{score ≥ threshold?}
+  g6 -. revise .-> P
   g6 -->|pass| D[7 · deploy]
 
   D --> M[8 · monitor]
-  M -. learnings → registry + next hypothesis .-> H
+  M -. "learnings → registry → next run" .-> H
 ```
 
 Shared state + cross-cutting agents — every pipeline agent reads/writes the PCO; cross-cutting agents attach to any stage:
@@ -78,6 +78,80 @@ flowchart TB
   K -->|no| A
   K -->|yes| ESC[[escalate to user]]
 ```
+
+## Triggers — start at any step
+
+Every agent is **dual-mode**: it can run inside the orchestrated `/pm-flow` loop, or be triggered on its own. Because all state lives in the PCO, **you can enter at any step** — run `/synthesis` once research is in the PCO, `/eval` on an existing spec, `/qbr` over past runs. Two ways to trigger:
+
+- **Auto-load (implicit):** a skill loads itself when the conversation topic matches its description (Claude Code reads each `SKILL.md` frontmatter). Just describe the task — the relevant agent's knowledge comes in.
+- **Slash command (explicit):** invoke it directly. Force a specific skill with `/<skill>` or `/pm-agentic-flow:<skill>`.
+
+```mermaid
+flowchart TB
+  subgraph stepwise[Pipeline triggers — enter at ANY step]
+    direction LR
+    c1["/hypothesis"]
+    c2["/research"]
+    c3["/synthesis"]
+    c4["/prd"]
+    c5["/prototype-spec"]
+    c6["/eval"]
+    c7["/deploy"]
+    c8["/monitor"]
+  end
+  subgraph crosscut[Cross-cutting & portfolio — attach anywhere]
+    direction LR
+    x1["/responsible-ai-review"]
+    x2["/stakeholder-translator"]
+    x3["/launch-readiness"]
+    x4["/qbr"]
+    x5["/metrics"]
+  end
+  ORCH["/pm-flow &lt;idea&gt; — runs the whole gated loop"]
+  PCO[(PRODUCT_CONTEXT.md + runs/registry.jsonl)]
+  stepwise -->|read needed sections · write back| PCO
+  crosscut -->|read · write| PCO
+  ORCH ==>|orchestrates every step through the gates| PCO
+```
+
+**Trigger reference**
+
+| Trigger | Starts | Reads → Writes (PCO) |
+|---------|--------|----------------------|
+| `/pm-flow <idea>` | the whole gated loop | `problem-seed` → all sections |
+| `/hypothesis <idea>` | framing | `problem-seed` → `problem-statement` |
+| `/research market\|competitive\|user\|all` | research | `problem-statement` → `research-*` |
+| `/synthesis` | consolidation | `research-*` → `synthesis` |
+| `/prd write\|critique` | the PRD loop | `synthesis` → `prd` |
+| `/prototype-spec` | the build spec | `prd` → `prototype-spec` |
+| `/eval` | anchored scoring | `prd`+`prototype-spec` → `eval-results` |
+| `/deploy` | the handoff | `eval-results` → `deploy` |
+| `/monitor` | post-launch loop | `deploy` → `monitor` (+ registry) |
+| `/responsible-ai-review` | governance | `prd`+`prototype-spec` → `responsible-ai` |
+| `/stakeholder-translator` | 3-audience comms | latest stage → `stakeholder-comms` |
+| `/launch-readiness` | launch review | `deploy` → `launch-readiness` |
+| `/qbr` | portfolio review | `runs/registry.jsonl` → `qbr` |
+| `/metrics` | process health | `runs/registry.jsonl` → report |
+
+A trigger simply refuses (with feedback) if its inputs aren't in the PCO yet — e.g. `/synthesis` before any research exists.
+
+## Using it in Claude Code
+
+```bash
+# 1. install (once)
+claude plugin marketplace add mazenelabdrawy/pm-agentic-flow
+claude plugin install pm-agentic-flow@pm-agentic-flow
+```
+
+Then, inside Claude Code:
+
+- **Run the full loop:** `/pm-flow A churn-risk early-warning tool for B2B SaaS CSMs` — it scaffolds the PCO and drives every gate to a handoff.
+- **Start at one step:** `/hypothesis <idea>`, or `/synthesis` if research already lives in the PCO, or `/eval` to score an existing spec. State carries between calls via `PRODUCT_CONTEXT.md`, so solo runs and the loop mix freely.
+- **Just talk:** describe what you're doing ("size the market for X") and the matching skill auto-loads; add `/<skill>` to force it.
+- **Tune the bar:** edit `eval/rubric.yaml` (thresholds, anchors, confidence floor).
+- **See the memory:** `/qbr` for a portfolio view, `/metrics` for where the pipeline bottlenecks.
+
+(Cowork and other assistants: see [README](../README.md#-installation) — skills are portable; the `/slash` triggers are Claude-specific.)
 
 ## Why gates, not a skill grab-bag
 

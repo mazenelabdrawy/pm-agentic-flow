@@ -45,38 +45,38 @@ The result: **better product decisions, traceable to evidence** — not just fas
 - **Dual-mode:** every agent runs solo *or* as a node in the loop, from one definition.
 
 ```mermaid
-flowchart LR
+flowchart TB
   idea([raw idea]) --> H[1 · hypothesis]
-  H --> g1{framing}
-  g1 -. fail .-> H
+  H --> g1{framing?}
+  g1 -. revise .-> H
   g1 -->|pass| R
   subgraph R[2 · research · parallel]
-    direction TB
+    direction LR
     RM[market]
     RC[competitive]
     RU[user]
   end
-  R --> g2{cited}
-  g2 -. fail .-> R
+  R --> g2{cited?}
+  g2 -. revise .-> R
   g2 -->|pass| S[3 · synthesis]
-  S --> g3{cited + consistent}
-  g3 -. fail .-> S
+  S --> g3{cited + consistent?}
+  g3 -. revise .-> S
   g3 -->|pass| P
   subgraph P[4 · prd]
     direction LR
     PW[prd-writer] <--> PC[prd-critique]
   end
-  P --> g4{traced + approved}
-  g4 -. fail .-> P
+  P --> g4{traced + approved?}
+  g4 -. revise .-> P
   g4 -->|pass| SP[5 · prototype-spec]
-  SP --> g5{spec complete}
-  g5 -. fail .-> SP
+  SP --> g5{spec complete?}
+  g5 -. revise .-> SP
   g5 -->|pass| E[6 · eval-runner]
-  E --> g6{score ≥ threshold}
-  g6 -. fail .-> P
+  E --> g6{score ≥ threshold?}
+  g6 -. revise .-> P
   g6 -->|pass| D[7 · deploy]
   D --> M[8 · monitor]
-  M -. learnings → registry → next run .-> H
+  M -. "learnings → registry → next run" .-> H
 ```
 
 Full diagrams + rationale: [docs/architecture.md](docs/architecture.md).
