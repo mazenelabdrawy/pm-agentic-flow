@@ -1,7 +1,7 @@
-# pm-flow eval rubric — tune these to your team's actual bar.
+# pm-agentic-flow eval rubric — tune these to your team's actual bar.
 # Gates read this file to decide pass / fail / revise. See docs/eval-gates.md.
 
-version: 0.1.0
+version: 0.2.0
 
 # Default behavior applied to every gate unless overridden per-gate below.
 defaults:
@@ -27,13 +27,13 @@ gates:
 
   synthesis-cited:
     stage: synthesis
-    check: citation
+    checks: [citation, consistency]   # cited + internally consistent
     sections: [synthesis]
     require_confidence: true   # each insight must carry a confidence tag
 
   prd-approved:
     stage: prd
-    checks: [citation, traceability]   # every requirement traces to a synthesis finding
+    checks: [citation, traceability, consistency]   # traced to findings + consistent across PCO
     require_critique_clear: true       # prd-critique must have no open unsupported-claim flags
 
   spec-complete:
@@ -51,19 +51,59 @@ gates:
 
 # Scoring criteria used by eval-runner to produce eval-results.
 # weight values are relative; they are normalized at scoring time.
+#
+# Each criterion carries ANCHORS: a description of what each score level looks
+# like. eval-runner must pick the anchor the artifact best matches and report
+# that level — this is what makes scoring reproducible instead of a vibe.
+# Allowed levels: 0.0 | 0.25 | 0.5 | 0.75 | 1.0 (pick the closest single level).
 scoring_criteria:
   - id: problem-fit
     weight: 3
     description: Does the prototype address the stated problem and target user?
+    anchors:
+      "1.0": Every screen/flow maps to the stated problem for the named target user; no scope outside it.
+      "0.75": Core flows serve the problem; one minor feature is tangential.
+      "0.5": Addresses the problem partially; notable gaps or some off-target scope.
+      "0.25": Loosely related; the core job is not clearly served.
+      "0.0": Solves a different problem or an undefined user.
+
   - id: evidence-grounding
     weight: 3
-    description: Are requirements traceable to cited findings?
+    description: Are requirements traceable to cited findings at adequate confidence?
+    anchors:
+      "1.0": Every requirement traces to a cited synthesis finding at ≥ min_confidence_to_advance.
+      "0.75": All but one requirement traced; the exception is flagged as an open question.
+      "0.5": Most requirements traced; ≥1 rests on an uncited or low-confidence finding.
+      "0.25": Several untraced requirements; evidence base is thin.
+      "0.0": Requirements are largely opinion; little or no traceability.
+
   - id: completeness
     weight: 2
-    description: Are flows, states, and edge cases covered?
+    description: Are flows, states (empty/loading/error/success), and edge cases covered?
+    anchors:
+      "1.0": Every requirement has an acceptance criterion; all states + key edge cases specified.
+      "0.75": Full coverage with one or two minor state/edge gaps.
+      "0.5": Happy paths covered; error/empty states or edge cases partially missing.
+      "0.25": Major gaps — multiple requirements lack criteria or states.
+      "0.0": Skeletal; coverage is largely absent.
+
   - id: feasibility
     weight: 2
     description: Is the spec buildable within stated constraints?
+    anchors:
+      "1.0": Clearly buildable; risks named with mitigations.
+      "0.75": Buildable; one unaddressed risk or assumption.
+      "0.5": Buildable with significant unknowns left open.
+      "0.25": Serious feasibility doubts unaddressed.
+      "0.0": Not buildable as specified.
+
   - id: responsible-ai
     weight: 1
     description: Are data-lineage, consent, and bias risks addressed (if applicable)?
+    anchors:
+      "1.0": Risks identified with concrete mitigations and a clear go / go-with-mitigations verdict.
+      "0.75": Risks identified; mitigations mostly concrete.
+      "0.5": Risks named but mitigations vague.
+      "0.25": Cursory mention; key risks missed.
+      "0.0": Not addressed for an AI-bearing product that needs it.
+      "n/a": Not an AI/data product — excluded from the aggregate (re-normalize remaining weights).

@@ -9,12 +9,21 @@ From zero to a populated PCO + PRD + eval results + handoff.
 claude plugin marketplace add mazenelabdrawy/pm-agentic-flow
 claude plugin install pm-agentic-flow@pm-agentic-flow
 ```
+Then `/pm-flow <your idea>`. *(Verified end-to-end: the manifest passes `claude plugin validate`, the marketplace adds, and the plugin is discoverable.)*
 
 ### Claude Cowork
 Customize (bottom-left) → Browse plugins → Personal → **+** → **Add marketplace from GitHub** → enter `mazenelabdrawy/pm-agentic-flow`.
 
+### Try it from a local clone (no marketplace needed)
+```bash
+git clone https://github.com/mazenelabdrawy/pm-agentic-flow
+claude plugin marketplace add ./pm-agentic-flow   # then install pm-agentic-flow@pm-agentic-flow
+```
+
 ### Without installing (read-only)
 Clone the repo and open [`examples/sample-run/`](../examples/sample-run/) — a complete worked run, no setup required.
+
+> **Contributors:** run `claude plugin validate .` (manifest check) and `python3 validate_agents.py` (agent/contract check) before opening a PR.
 
 ## 2. Run the full loop
 
@@ -23,10 +32,12 @@ Clone the repo and open [`examples/sample-run/`](../examples/sample-run/) — a 
 ```
 
 The orchestrator will:
-1. Create `PRODUCT_CONTEXT.md` from the template and fill `problem-seed`.
+1. Create `PRODUCT_CONTEXT.md` from the template and fill `problem-seed` (reading prior `runs/registry.jsonl` learnings so it starts smarter).
 2. Run each stage, printing `✓ stage — gate: verdict` as it goes.
 3. Stop and ask you when a gate fails more than the rubric's `max_revisions`.
-4. Leave you a populated PCO and a handoff doc.
+4. Leave you a populated PCO + a handoff doc, and append the run to `runs/registry.jsonl`.
+
+After a few runs, try `/qbr` (portfolio view) and `/metrics` (where the pipeline bottlenecks).
 
 ## 3. Or use any agent standalone
 
@@ -53,3 +64,5 @@ Edit [`eval/rubric.yaml`](../eval/rubric.yaml) to match your team's standard: ga
 | The shared-state schema | `docs/pco-schema.md` |
 | A complete example | `examples/sample-run/` |
 | Starting templates | `templates/` |
+| Cross-run memory (the registry) | `runs/registry.jsonl` + `runs/README.md` |
+| Scoring anchors + calibration | `eval/rubric.yaml` + `eval/exemplars/` |

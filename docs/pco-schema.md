@@ -45,6 +45,7 @@ Legend — **R** = required before its owning stage's gate can pass · **O** = o
 
 ### `meta` — Run metadata (R)
 Owner: **orchestrator**
+- `run-id` — stable identifier `YYYY-MM-DD-<slug>`; also the key used in `runs/registry.jsonl` (the cross-run memory)
 - `idea` — the raw seed the run started from
 - `created` / `last_updated` — ISO timestamps
 - `rubric` — path to the active rubric (default `eval/rubric.yaml`)
@@ -108,7 +109,8 @@ Owner: **deploy**
 ### `monitor` — Production monitoring (R for stage 8)
 Owner: **monitor**
 - `production-metrics`, `incidents`, `learnings`.
-- `learnings` feed back as new entries into `problem-seed` / `problem-statement` bets — closing the loop.
+- `learnings` are **structured**, each: `{ learning, evidence (cited metric), feeds (problem-statement.bets | rubric | <agent>) }` — so they can be replayed into the next hypothesis and aggregated by `/qbr`.
+- At run end the orchestrator copies `learnings` (and run outcome) into `runs/registry.jsonl` — the cross-run memory. `learnings` close the loop back into `problem-statement.bets`.
 
 ### Cross-cutting sections (O — written when the agent runs)
 - `responsible-ai` — owner **responsible-ai-review**: data lineage, consent, hallucination/bias risks, go/no-go.

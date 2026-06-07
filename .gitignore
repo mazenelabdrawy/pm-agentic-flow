@@ -15,7 +15,10 @@ venv/
 
 # Runtime PCO output from local test runs (keep templates + examples)
 /PRODUCT_CONTEXT.md
-/runs/
+# Per-run working dirs are runtime; the registry + its README are tracked memory.
+/runs/*/
+!/runs/registry.jsonl
+!/runs/README.md
 
 # Node (none expected, but guard)
 node_modules/

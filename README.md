@@ -36,24 +36,50 @@ The result: **better product decisions, traceable to evidence** — not just fas
 
 ## 🧭 How It Works (Agents · Gates · the Loop)
 
+**A gated loop, not a grab-bag.** Other PM skill libraries hand you independent prompts; pm-agentic-flow runs an evidence gate between every step and remembers every run.
+
 - **Agents** are the building blocks — each is a `skills/<name>/SKILL.md` holding its role, the PCO sections it reads/writes, its gate, and its system prompt.
 - **Commands** are how you invoke them — `/<agent>` runs one standalone; **`/pm-flow`** chains them all through the gates.
 - **The PCO** (`PRODUCT_CONTEXT.md`) is the single shared-state file. Agents read and write it — no copy-paste handoff. **GitHub is the system of record.**
+- **Memory** — every run lands in `runs/registry.jsonl`; `/qbr` and `/metrics` read it, and the next run starts smarter.
 - **Dual-mode:** every agent runs solo *or* as a node in the loop, from one definition.
 
-```
-1 · hypothesis ──[gate: framing complete?]──▶
-      ├── research-market ┐
-      ├── research-competitive ├─▶ 3 · synthesis ──[gate: every claim cited?]──▶
-      └── research-user ┘
-4 · prd-writer ⇄ prd-critique ──[approved: every requirement traced]──▶
-5 · prototype-spec ──[gate: spec complete?]──▶
-6 · eval-runner ──[gate: score ≥ threshold?]──▶
-7 · deploy ──▶ 8 · monitor ──[learnings loop back to hypothesis]──┐
-      └──────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+  idea([raw idea]) --> H[1 · hypothesis]
+  H --> g1{framing}
+  g1 -. fail .-> H
+  g1 -->|pass| R
+  subgraph R[2 · research · parallel]
+    direction TB
+    RM[market]
+    RC[competitive]
+    RU[user]
+  end
+  R --> g2{cited}
+  g2 -. fail .-> R
+  g2 -->|pass| S[3 · synthesis]
+  S --> g3{cited + consistent}
+  g3 -. fail .-> S
+  g3 -->|pass| P
+  subgraph P[4 · prd]
+    direction LR
+    PW[prd-writer] <--> PC[prd-critique]
+  end
+  P --> g4{traced + approved}
+  g4 -. fail .-> P
+  g4 -->|pass| SP[5 · prototype-spec]
+  SP --> g5{spec complete}
+  g5 -. fail .-> SP
+  g5 -->|pass| E[6 · eval-runner]
+  E --> g6{score ≥ threshold}
+  g6 -. fail .-> P
+  g6 -->|pass| D[7 · deploy]
+  D --> M[8 · monitor]
+  M -. learnings → registry → next run .-> H
 ```
 
-Full diagram + rationale: [docs/architecture.md](docs/architecture.md).
+Full diagrams + rationale: [docs/architecture.md](docs/architecture.md).
 
 ## 📦 Installation
 
@@ -115,19 +141,21 @@ Run the full loop on an idea:
 </details>
 
 <details>
-<summary><strong>Cross-cutting agents</strong> — attach to any stage, or run standalone (4 agents)</summary>
+<summary><strong>Cross-cutting & portfolio agents</strong> — attach to any stage, or run standalone (5 agents)</summary>
 
 | Agent | Purpose |
 |-------|---------|
 | `responsible-ai-review` | AI governance checklist — data lineage, consent, hallucination/bias risk; issues a go/no-go before launch |
 | `stakeholder-translator` | rewrites one update three ways — technical (eng), outcome-focused (execs), plain-language (users) |
 | `launch-readiness` | pressure-tests the launch like a skeptical VP — model card, rollback plan, monitoring hooks, on-call |
-| `qbr` | pulls OKRs, ship log, and metrics into a QBR narrative with a scale/sustain/sunset recommendation |
+| `qbr` | reads `runs/registry.jsonl` to build a portfolio QBR — scale/sustain/sunset per area, grounded in real run data |
+| `metrics` | reports process health from the registry — gate-failure rate per transition, revisions/stage, first-pass rate, time-to-deploy |
 
 **Examples**
 - `/responsible-ai-review` before any AI feature ships
 - `/stakeholder-translator` to brief eng, execs, and users from one source of truth
 - `/qbr` to turn a quarter of runs into a portfolio decision
+- `/metrics 2026-Q2` to see where the pipeline itself is bottlenecked
 
 </details>
 

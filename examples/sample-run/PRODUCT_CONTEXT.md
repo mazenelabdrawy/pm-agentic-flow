@@ -122,15 +122,17 @@
   | Given an account with < 2 weeks of usage, when scoring runs, then it shows "insufficient data" and no risk flag | REQ-1 |
 
 ## eval-results
+<!-- Anchored scoring per eval/checks/score.md — each criterion snaps to a rubric anchor level. -->
 - criteria:
-  | criterion | score | threshold/floor | verdict | note |
-  |-----------|-------|-----------------|---------|------|
-  | problem-fit | 0.90 | floor 0.50 | pass | directly serves the lead-time job |
-  | evidence-grounding | 0.85 | floor 0.50 | pass | all v1 requirements trace to findings |
-  | completeness | 0.80 | floor 0.50 | pass | states + edge cases covered |
-  | feasibility | 0.75 | floor 0.50 | pass | usage-only model is a stated risk |
-  | responsible-ai | 0.80 | floor 0.50 | pass | consent mitigation required |
-- score: 0.83 / threshold 0.75
+  | criterion | level | anchor matched | justification (artifact) | floor | verdict |
+  |-----------|-------|----------------|--------------------------|-------|---------|
+  | problem-fit | 1.0 | every screen/flow maps to the problem for the named user | Accounts-to-Watch + Account Detail + CRM card all serve the CSM lead-time job; non-goals hold scope | 0.5 | pass |
+  | evidence-grounding | 0.75 | all but one req traced; exception flagged as open question | REQ-1…5 trace to INS-1/2/4; REQ-6 moved to open-questions by prd-critique | 0.5 | pass |
+  | completeness | 0.75 | full coverage with one or two minor gaps | every REQ has an acceptance criterion; empty/loading/error/insufficient-data states + 2 edge cases | 0.5 | pass |
+  | feasibility | 0.75 | buildable; one unaddressed risk | usage-only model named as a risk with a kill criterion | 0.5 | pass |
+  | responsible-ai | 0.75 | risks identified; mitigations mostly concrete | consent + templated-signals mitigations; go-with-mitigations | 0.5 | pass |
+- weights_normalized: {problem-fit: 0.273, evidence-grounding: 0.273, completeness: 0.182, feasibility: 0.182, responsible-ai: 0.091}
+- score: 0.82 / threshold 0.75
 - verdict: pass
 
 ## responsible-ai

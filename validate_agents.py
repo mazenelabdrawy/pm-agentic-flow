@@ -94,6 +94,19 @@ def check_rubric() -> None:
                  "missing `gates:` or `scoring_criteria:` keys.")
     except Exception as e:  # noqa: BLE001
         err(f"eval/rubric.yaml does not parse as YAML: {e}")
+    # Every check a gate references must exist as eval/checks/<name>.md.
+    checks_dir = ROOT / "eval" / "checks"
+    available = {p.stem for p in checks_dir.glob("*.md")} if checks_dir.exists() else set()
+    referenced: set[str] = set()
+    for m in re.finditer(r"check:\s*([a-z][a-z0-9-]+)", text):
+        referenced.add(m.group(1))
+    for m in re.finditer(r"checks:\s*\[([^\]]*)\]", text):
+        for tok in m.group(1).split(","):
+            tok = tok.strip()
+            if tok:
+                referenced.add(tok)
+    for name in sorted(referenced - available):
+        err(f"eval/rubric.yaml references check `{name}` but eval/checks/{name}.md is missing.")
 
 
 def referenced_pco_ids(body: str) -> set[str]:

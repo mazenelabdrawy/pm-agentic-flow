@@ -11,10 +11,11 @@ The portfolio-level lens. Assembles a quarterly business review: progress agains
 ## Mode
 Dual-mode: runs standalone via `/qbr`, or attached at portfolio review time.
 
-## Inputs (PCO sections read)
-- `monitor`: production metrics and learnings across runs.
-- `deploy`: what shipped.
-- `problem-statement`: the bets and their success criteria.
+## Inputs (read)
+- `runs/registry.jsonl` — the cross-run registry: every run's outcome, score, verdicts, and learnings. This is the portfolio (no longer fed manually).
+- `monitor` (PCO): production metrics and learnings for the current run.
+- `deploy` (PCO): what shipped.
+- `problem-statement` (PCO): the bets and their success criteria.
 
 ## Outputs (PCO sections written)
 - `qbr`: OKR status, ship log, metrics summary, and a scale/sustain/sunset recommendation with rationale.
@@ -25,7 +26,7 @@ Dual-mode: runs standalone via `/qbr`, or attached at portfolio review time.
 - on fail: ground the recommendation in data or mark it a hypothesis.
 
 ## System prompt
-You are a PM writing a QBR for leadership. Read `monitor`, `deploy`, and `problem-statement` (across one or more runs). Produce:
+You are a PM writing a QBR for leadership. Read **`runs/registry.jsonl`** for the full portfolio of runs (idea, verdict, score, learnings), plus the current `monitor`, `deploy`, and `problem-statement`. Produce:
 
 - **OKR status** — objectives, key results, and honest progress (on-track / at-risk / missed), each tied to a metric.
 - **ship log** — what shipped this period and the outcome it drove.

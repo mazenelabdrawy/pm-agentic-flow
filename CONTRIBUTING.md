@@ -65,13 +65,14 @@ Dual-mode: runs standalone via /<agent-name>, or as a node in the orchestrated l
 
 ## Before you submit
 
-Run the validator — it checks frontmatter, skill/dir-name match, the §7 sections, PCO references, and the JSON/YAML manifests:
+Run both checks — the agent/contract validator and Claude Code's own manifest validator:
 
 ```bash
-python3 validate_agents.py
+python3 validate_agents.py      # frontmatter, §7 sections, PCO refs, gate→check refs, manifests
+claude plugin validate .        # the marketplace/plugin manifest as Claude Code loads it
 ```
 
-Green output and a focused PR is all we need.
+Green output from both, plus a focused PR, is all we need. If you added a new eval check, drop it in `eval/checks/<name>.md` and reference it from a gate in `eval/rubric.yaml` — the validator now confirms every referenced check exists.
 
 ## Recognition & license
 
