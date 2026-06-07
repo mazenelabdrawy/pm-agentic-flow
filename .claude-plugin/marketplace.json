@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "An eval-gated agentic pipeline for product management. Every handoff passes an evidence gate before the next agent runs.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
